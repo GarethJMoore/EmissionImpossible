@@ -1,109 +1,68 @@
-﻿# Quantitative Modelling of Biological Response Dynamics
+# Quantitative Modelling of Biological Response Dynamics
 
-This repository contains the analysis notebook and supporting data used for the manuscript:
+This repository contains the fitting notebook, submission datasets, reference outputs, and supporting scripts for the manuscript:
 
 **"Quantitative modelling of biological response dynamics reveals novel patterns in plant volatile signalling"**
 
-The core workflow fits dynamic biological response curves (primarily stress-induced maize volatile emissions) using a re-parameterized gamma model, then compares fitted descriptors across treatments, compounds, and experimental designs.
+The current repository still centers on the notebook, but it now also includes explicit planning and regression tools for converting the work into a submission-ready, script-driven project without changing numerical outputs.
 
-## What This Project Does
+## Current State
 
-The notebook estimates four primary fit parameters for each emission curve:
-
-- `R_peak`: maximum modeled response
-- `t_onset`: onset delay
-- `t_peak`: time of peak response
-- `t_mean`: mean response time
-
-From these, it derives additional descriptors used throughout the paper:
-
-- `integral`: theoretical total response (area under curve)
-- `duration`: response length (`t_mean - t_onset`)
-- `shape`: normalized symmetry-like descriptor
-
-The fitting approach combines:
-
-- global optimization (`scipy.optimize.differential_evolution`)
-- local constrained refinement (`scipy.optimize.minimize`, SLSQP)
-
-It supports both:
-
-- single-peak responses (most experiments)
-- multi-peak responses (triple-damage experiment)
-
-## Repository Layout
+The main working file is:
 
 - `Quantitative_modelling of_biological_response_dynamics_Submitted_Code_elife2.ipynb`
-  - Main analysis notebook (all methods + figure-specific analyses).
+
+This notebook currently:
+
+- loads root-level `*_sub.csv` input files
+- cleans and reconstructs emission signals
+- fits single-curve and triple-curve gamma models
+- exports flattened result CSVs into `Submitted_results/`
+
+The notebook is also the current source of truth for exact submission behavior.
+
+## What the Model Produces
+
+For each response curve, the workflow estimates:
+
+- `R_peak`
+- `t_onset`
+- `t_peak`
+- `t_mean`
+
+From these it derives:
+
+- `integral`
+- `duration`
+- `shape`
+
+Fitting uses a two-stage optimizer:
+
+- `scipy.optimize.differential_evolution`
+- `scipy.optimize.minimize(..., method='SLSQP')`
+
+The DE stage is currently seeded (`seed=42`) so repeated runs are reproducible under the same environment.
+
+## Repository Contents
+
+- `Quantitative_modelling of_biological_response_dynamics_Submitted_Code_elife2.ipynb`
+  - main analysis and fitting notebook
 - `Quantitative modelling of biological response dynamics reveals novel patterns in plant volatile signalling.pdf`
-  - Manuscript/preprint describing model rationale, experiments, and biological interpretation.
-- `DataFolder/inputs/`
-  - Raw/intermediate input CSV files and helper scripts.
-- `DataFolder/inputs/Results_output/`
-  - Existing exported fit outputs and helper Python modules (`Model.py`, viewer/plot widgets).
-- `main.py`
-  - Unrelated minimal script scaffold.
+  - manuscript/preprint
+- `compare_results.py`
+  - regression comparison tool for outputs
+- `project_plan.md`
+  - human-oriented conversion plan for restructuring the repository
+- `AGENTS.md`
+  - instructions for an LLM/code agent performing the conversion
+- `Submitted_results/`
+  - current generated outputs
+- `Submitted_results Ref/`
+  - reference copy used to confirm output equivalence
 
-## Notebook Organization (Figure-by-Figure)
+## Input Data
 
-The notebook is structured in sections that mirror the manuscript figures:
-
-1. **Model + utilities**
-   - model definition (`model_gamma`)
-   - descriptors (`shape`, `duration`, `total_integral_model_gamma`)
-   - cleaning/reconstruction (`clean_and_reconstruct`, SVD helper, background subtraction)
-   - fitting (`process_single_group`, `run_de_then_slsqp`)
-   - plotting and export helpers
-
-2. **Figure 1**
-   - theoretical behavior of model descriptors
-
-3. **Figure 2 (single damage experiments)**
-   - dose dependence
-   - time-of-day effects
-   - oral secretion context (setup links to Figure 3)
-   - leaf developmental stage
-   - genotype comparison
-
-4. **Figure 3 (OS, all compounds)**
-   - DMNT, indole, TMTT, sesquiterpenes, monoterpenes
-
-5. **Figure 4A-E (triple damage)**
-   - multi-peak fitting implementation
-
-6. **Figure 4F-I (real herbivore damage)**
-   - single-peak fitting across multiple compounds
-
-7. **Supplementary analyses**
-   - GLV kinetics
-   - gene-expression kinetics
-   - robustness to shortened measurement windows
-   - robustness to temporal downsampling
-
-## Inputs and Data Mapping
-
-The notebook currently references several files named like `*_sub.csv` (for example `singledose_sub.csv`) in the working directory.
-These `*_sub.csv` files are now present in the project root and match the columns required by the notebook fitting functions.
-
-Practical mapping used in this codebase:
-
-- `singledose_sub.csv` -> `DataFolder/inputs/singledose.csv`
-- `time_of_day_sub.csv` -> `DataFolder/inputs/singlecircadian.csv`
-- `leaves_sub.csv` -> `DataFolder/inputs/Leaves.csv` (or `Leaves_unsorted.csv`, depending on preprocessing)
-- `genotype_sub.csv` -> `DataFolder/inputs/genotypesyn.csv`
-- `os_with_sub.csv` -> `DataFolder/inputs/os_with.csv`
-- `os_without_sub.csv` -> `DataFolder/inputs/os_without.csv`
-- `triple_sub.csv` -> `DataFolder/inputs/triple.csv`
-- `herbreal_sub.csv` -> `DataFolder/inputs/herbreal.csv`
-- `glvkin_sub.csv` -> `DataFolder/inputs/glvkin.csv`
-- `genexpression_real_sub.csv` -> `DataFolder/inputs/genexpression_real.csv`
-
-Most datasets use columns such as:
-
-- `Emission`, `Channel_number`, `comp`, `time`, `Type`
-- metadata columns like `d1_time`, `d2_time`, `intensity1`, `Totalbio`, `Leaf3`
-
-Current root-level `*_sub.csv` inputs:
+The notebook currently uses these project-root input files:
 
 - `singledose_sub.csv`
 - `time_of_day_sub.csv`
@@ -116,81 +75,93 @@ Current root-level `*_sub.csv` inputs:
 - `glvkin_sub.csv`
 - `genexpression_real_sub.csv`
 
-## Environment Setup
+Most datasets contain:
 
-The notebook depends on:
+- `Emission`
+- `Channel_number`
+- `comp`
+- `time`
+- `Type`
 
-- `numpy`
-- `pandas`
-- `matplotlib`
-- `scipy`
-- `scikit-learn`
-- Jupyter
+And metadata such as:
 
-Recommended setup:
+- `d1_time`
+- `d2_time`
+- `intensity1`
+- `Totalbio`
+- `Leaf3`
+
+## Outputs and Regression Check
+
+Generated result files are written to:
+
+- `Submitted_results/`
+
+To check whether a refactor preserves exact output behavior, compare against the reference copy:
+
+```bash
+python compare_results.py "Submitted_results" "Submitted_results Ref"
+```
+
+This comparison is the current regression test for the project. The submission refactor should be considered correct only if it reproduces the same outputs.
+
+## Environment
+
+Current dependencies are listed in:
+
+- `requirements.txt`
+
+Typical setup:
 
 ```bash
 python -m venv .venv
-.venv\\Scripts\\activate
-pip install numpy pandas matplotlib scipy scikit-learn jupyter
-jupyter notebook
+.venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
-Then open:
+## How the Notebook Is Organized
 
-- `Quantitative_modelling of_biological_response_dynamics_Submitted_Code_elife2.ipynb`
+The notebook is arranged roughly by manuscript figure:
 
-## Running the Analysis
+1. model, cleaning, fitting, and export utilities
+2. Figure 1 theoretical behavior
+3. Figure 2 single-damage experiments
+4. Figure 3 oral secretion analyses across compounds
+5. Figure 4 triple-damage and real-herbivore analyses
+6. supplementary GLV, gene-expression, shortened-window, and downsampled analyses
 
-Because this project evolved over time, reproducibility is easiest if you:
+Several parameter configs have already been consolidated into shared per-compound definitions inside the notebook for:
 
-1. Start in project root.
-2. Confirm the root-level `*_sub.csv` inputs above are present (they are the filenames referenced directly by notebook cells).
-3. Create output directory expected by notebook exports:
-   - `Submitted_results/`
-4. Run cells sequentially section-by-section.
+- `DMNT`
+- `indole`
+- `TMTT`
+- `sesq`
+- `mono`
 
-The notebook prints channel-level fit quality (`R²`) and writes flattened result tables via `save_results_to_csv(...)`.
+## Important Notes
 
-## Outputs
+- The notebook is still the authoritative implementation.
+- The repository is under Git and now includes planning documents for converting the codebase into a package plus script runner.
+- `Submitted_results Ref/` is ignored by Git and exists specifically to validate that future refactors do not change outputs.
+- `compare_results.py` is intended to be used repeatedly during the conversion to a public submission structure.
 
-Generated outputs are CSV files containing per-timepoint exploded fit results, including modeled curves and descriptors.
+## Planned Direction
 
-In this repository, many previously generated result files already exist under:
+The intended next step is to move from a notebook-only workflow to a repository with:
 
-- `DataFolder/inputs/Results_output/`
+- reusable code under `src/emission_model/`
+- a command-line runner under `scripts/`
+- analysis definitions in config
+- the notebook retained for exploration only
 
-These include outputs for major compounds and analyses (dose, circadian, genotype, OS, herbivory, GLV, gene expression, and robustness tests).
+That plan is documented in:
 
-## Key Findings Reflected in This Code + Paper
-
-From the manuscript and notebook structure, the modeling framework is used to show that:
-
-- time of wounding alters onset/duration/shape even when total emission is unchanged
-- oral secretions reshape compound-specific dynamics beyond simple amplitude changes
-- emission strength and response duration can vary independently across genotypes
-- the framework remains informative under incomplete or lower-resolution sampling and for complex multi-peak responses
-
-## Current Caveats
-
-- The project is notebook-centric and monolithic; there is no single package entrypoint.
-- There are two parallel input conventions (`*_sub.csv` in root and raw source files in `DataFolder/inputs/`), so keep paths consistent when re-running or refactoring.
-- Output paths are hard-coded (`Submitted_results/`).
-- Parameter bounds are often manually tuned per section/compound.
-- A small type label mismatch appears in genotype filtering (`NC3000` in code vs `NC300` in data naming), so verify before reruns.
-
-## Suggested Next Cleanup Steps
-
-1. Move shared functions into a versioned Python module (`src/`).
-2. Add a single config file that maps figure sections to input files and parameter bounds.
-3. Add a deterministic runner script (CLI) for each figure.
-4. Add environment lockfile (`requirements.txt` or `pyproject.toml`).
-5. Add lightweight tests for model math and fitting constraints.
+- `project_plan.md`
+- `AGENTS.md`
 
 ## Citation
 
-If you use this code, cite the manuscript PDF in this repository:
+If you use this repository, cite the manuscript PDF included here:
 
 - Waterman JM, Moore GJ, Amdahl-Culleton LK, Hoefer S, Erb M.
   *Quantitative modelling of biological response dynamics reveals novel patterns in plant volatile signalling.*
-
