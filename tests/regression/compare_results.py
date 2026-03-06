@@ -113,11 +113,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Compare two files or two directories and print where content differs. "
-            "Defaults to Submitted_results vs Submitted_results Ref."
+            "Defaults to results/Submitted_results vs tests/regression/reference."
         )
     )
-    parser.add_argument("path_a", nargs="?", default="Submitted_results")
-    parser.add_argument("path_b", nargs="?", default="Submitted_results Ref")
+    parser.add_argument("path_a", nargs="?", default="results/Submitted_results")
+    parser.add_argument("path_b", nargs="?", default="tests/regression/reference")
     args = parser.parse_args()
 
     a = Path(args.path_a)

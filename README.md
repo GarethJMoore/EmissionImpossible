@@ -1,167 +1,97 @@
 # Quantitative Modelling of Biological Response Dynamics
 
-This repository contains the fitting notebook, submission datasets, reference outputs, and supporting scripts for the manuscript:
+This repository contains the data, analysis code, and reference outputs for the paper:
 
 **"Quantitative modelling of biological response dynamics reveals novel patterns in plant volatile signalling"**
 
-The current repository still centers on the notebook, but it now also includes explicit planning and regression tools for converting the work into a submission-ready, script-driven project without changing numerical outputs.
+The paper itself is included in this repository as:
 
-## Current State
+- [Quantitative modelling of biological response dynamics reveals novel patterns in plant volatile signalling.pdf](./Quantitative%20modelling%20of%20biological%20response%20dynamics%20reveals%20novel%20patterns%20in%20plant%20volatile%20signalling.pdf)
 
-The main working file is:
+## What This Project Is
 
-- `Quantitative_modelling of_biological_response_dynamics_Submitted_Code_elife2.ipynb`
+This project studies how plant volatile emissions change over time after damage or treatment. The analysis fits mathematical response curves to measured time-series data and produces the submission result tables used in the paper.
 
-This notebook currently:
+In practical terms, this repository is set up so that someone can:
 
-- loads root-level `*_sub.csv` input files
-- cleans and reconstructs emission signals
-- fits single-curve and triple-curve gamma models
-- exports flattened result CSVs into `Submitted_results/`
+1. use the provided input data,
+2. run the analysis from the command line,
+3. regenerate the result files,
+4. confirm that the regenerated files exactly match the reference outputs.
 
-The notebook is also the current source of truth for exact submission behavior.
+## Where To Start
 
-## What the Model Produces
+If you are new to the repository, the simplest path is:
 
-For each response curve, the workflow estimates:
+1. install the Python dependencies,
+2. run the main analysis script,
+3. compare the generated outputs with the reference outputs.
 
-- `R_peak`
-- `t_onset`
-- `t_peak`
-- `t_mean`
+You do not need to use the notebook to reproduce the submitted results.
 
-From these it derives:
+## Repository Layout
 
-- `integral`
-- `duration`
-- `shape`
+- `data/`
+  Submission input datasets (`*_sub.csv`)
+- `results/Submitted_results/`
+  Generated output CSV files
+- `tests/regression/reference/`
+  Reference output CSV files used for exact comparison
+- `scripts/run_analysis.py`
+  Main script that runs the full analysis pipeline
+- `src/emission_model/`
+  Reusable analysis code extracted from the original workflow
+- `tests/regression/compare_results.py`
+  Exact file comparison tool
 
-Fitting uses a two-stage optimizer:
+## Quick Setup
 
-- `scipy.optimize.differential_evolution`
-- `scipy.optimize.minimize(..., method='SLSQP')`
-
-The DE stage is currently seeded (`seed=42`) so repeated runs are reproducible under the same environment.
-
-## Repository Contents
-
-- `Quantitative_modelling of_biological_response_dynamics_Submitted_Code_elife2.ipynb`
-  - main analysis and fitting notebook
-- `Quantitative modelling of biological response dynamics reveals novel patterns in plant volatile signalling.pdf`
-  - manuscript/preprint
-- `compare_results.py`
-  - regression comparison tool for outputs
-- `project_plan.md`
-  - human-oriented conversion plan for restructuring the repository
-- `AGENTS.md`
-  - instructions for an LLM/code agent performing the conversion
-- `Submitted_results/`
-  - current generated outputs
-- `Submitted_results Ref/`
-  - reference copy used to confirm output equivalence
-
-## Input Data
-
-The notebook currently uses these project-root input files:
-
-- `singledose_sub.csv`
-- `time_of_day_sub.csv`
-- `leaves_sub.csv`
-- `genotype_sub.csv`
-- `os_with_sub.csv`
-- `os_without_sub.csv`
-- `triple_sub.csv`
-- `herbreal_sub.csv`
-- `glvkin_sub.csv`
-- `genexpression_real_sub.csv`
-
-Most datasets contain:
-
-- `Emission`
-- `Channel_number`
-- `comp`
-- `time`
-- `Type`
-
-And metadata such as:
-
-- `d1_time`
-- `d2_time`
-- `intensity1`
-- `Totalbio`
-- `Leaf3`
-
-## Outputs and Regression Check
-
-Generated result files are written to:
-
-- `Submitted_results/`
-
-To check whether a refactor preserves exact output behavior, compare against the reference copy:
-
-```bash
-python compare_results.py "Submitted_results" "Submitted_results Ref"
-```
-
-This comparison is the current regression test for the project. The submission refactor should be considered correct only if it reproduces the same outputs.
-
-## Environment
-
-Current dependencies are listed in:
-
-- `requirements.txt`
-
-Typical setup:
+On Windows:
 
 ```bash
 python -m venv .venv
-.venv\Scripts\activate
+.\.venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## How the Notebook Is Organized
+## Run The Full Analysis
 
-The notebook is arranged roughly by manuscript figure:
+From the repository root, run:
 
-1. model, cleaning, fitting, and export utilities
-2. Figure 1 theoretical behavior
-3. Figure 2 single-damage experiments
-4. Figure 3 oral secretion analyses across compounds
-5. Figure 4 triple-damage and real-herbivore analyses
-6. supplementary GLV, gene-expression, shortened-window, and downsampled analyses
+```bash
+python scripts/run_analysis.py
+```
 
-Several parameter configs have already been consolidated into shared per-compound definitions inside the notebook for:
+This will regenerate the result files in:
 
-- `DMNT`
-- `indole`
-- `TMTT`
-- `sesq`
-- `mono`
+`results/Submitted_results/`
 
-## Important Notes
+## Check That The Results Match
 
-- The notebook is still the authoritative implementation.
-- The repository is under Git and now includes planning documents for converting the codebase into a package plus script runner.
-- `Submitted_results Ref/` is ignored by Git and exists specifically to validate that future refactors do not change outputs.
-- `compare_results.py` is intended to be used repeatedly during the conversion to a public submission structure.
+To confirm that the outputs are exactly the expected ones, run:
 
-## Planned Direction
+```bash
+python tests/regression/compare_results.py "results/Submitted_results" "tests/regression/reference"
+```
 
-The intended next step is to move from a notebook-only workflow to a repository with:
+Expected result:
 
-- reusable code under `src/emission_model/`
-- a command-line runner under `scripts/`
-- analysis definitions in config
-- the notebook retained for exploration only
+`No differences found.`
 
-That plan is documented in:
+## Run One Part Of The Analysis
 
-- `project_plan.md`
-- `AGENTS.md`
+If you only want to run one analysis block, you can do that too. For example:
 
-## Citation
+```bash
+python scripts/run_analysis.py --analysis dmnt_dose
+```
 
-If you use this repository, cite the manuscript PDF included here:
+## For Readers Of The Paper
 
-- Waterman JM, Moore GJ, Amdahl-Culleton LK, Hoefer S, Erb M.
-  *Quantitative modelling of biological response dynamics reveals novel patterns in plant volatile signalling.*
+If your main goal is to understand the scientific context, start with the PDF paper. If your main goal is to reproduce the submitted computational outputs, start with the script runner and the regression comparison command above.
+
+## Troubleshooting
+
+- Run commands from the repository root.
+- Make sure the same Python environment is used for both installing dependencies and running the script.
+- If you rerun the pipeline, rerun the regression comparison as well.

@@ -2,148 +2,71 @@
 
 Purpose
 
-This repository is being converted from a notebook-centered research workflow into a GitHub-ready paper-code repository.
+Practical operating guide for future code agents working in this repository.
 
-The primary requirement is exact reproducibility of current outputs for the current submission datasets.
+Current State (as of 2026-03-06)
 
-You must treat the current notebook behavior as the source of truth unless the user explicitly instructs otherwise.
+- A script pipeline exists and is runnable:
+  - `scripts/run_analysis.py`
+  - `src/emission_model/`
+- Input data is in:
+  - `data/*_sub.csv`
+- Outputs are written to:
+  - `results/Submitted_results/`
+- Reference outputs are in:
+  - `tests/regression/reference/`
+- Regression comparator:
+  - `tests/regression/compare_results.py`
 
+Non-Negotiable Rule
 
-Core Objective
+Treat any output difference as a regression unless the user explicitly approves it.
 
-Refactor the project so that:
+Required Validation Command
 
-- input data can be processed through a script-driven pipeline,
-- the same outputs currently produced by the notebook are reproduced,
-- the notebook remains available for exploration and fitting work,
-- the final structure is suitable for public GitHub release.
+After changing pipeline/model code, run:
 
+`python tests/regression/compare_results.py "results/Submitted_results" "tests/regression/reference"`
 
-Critical Constraint
+Expected result:
 
-Do not accept "close enough" output.
+`No differences found.`
 
-The repository contains a regression comparison tool:
+Notebook Policy
 
-- `compare_results.py`
+- Keep the notebook available:
+  - `notebooks/Quantitative_modelling_of_biological_response_dynamics_Submitted_Code_elife2.ipynb`
+- Do not modify notebook logic unless the user explicitly asks.
+- Prefer changes in `src/` + `scripts/` and validate with regression checks.
 
-It also contains:
+How To Run
 
-- current outputs in `Submitted_results/`
-- reference outputs in `Submitted_results Ref/`
+Run full pipeline:
 
-Any refactor that changes outputs must be treated as a regression unless the user explicitly approves the change.
+`python scripts/run_analysis.py`
 
+Run one analysis:
 
-What Success Looks Like
+`python scripts/run_analysis.py --analysis dmnt_dose`
 
-The conversion is successful only if:
+Notes:
 
-1. A script-based runner can generate outputs from the current input data.
-2. Generated outputs match the reference outputs.
-3. `python compare_results.py "Submitted_results" "Submitted_results Ref"` reports no differences.
+- The runner resolves `data/`, `results/`, and config paths relative to repo root, so it can be launched from outside the repo directory.
 
+Safe Working Style
 
-Required Working Style
+1. Small, validated changes.
+2. Preserve parameter bounds, filtering, and file naming unless instructed.
+3. Prefer explicit code over abstractions that could hide behavior changes.
+4. Report exactly what was changed and whether regression checks passed.
 
-1. Preserve behavior before improving design.
+When In Doubt
 
-Extract functions first. Avoid changing defaults, parameter bounds, filtering logic, file names, or data flow unless necessary.
+Use existing pipeline functions in:
 
-2. Use regression checks constantly.
+- `src/emission_model/pipelines.py`
+- `src/emission_model/fitting.py`
+- `src/emission_model/cleaning.py`
+- `src/emission_model/model.py`
 
-After any substantial refactor to the pipeline, regenerate outputs and compare them against the reference folder.
-
-3. Keep the notebook usable.
-
-The notebook may remain as a consumer of the extracted package. It does not need to remain the canonical implementation.
-
-4. Prefer explicit over clever.
-
-This is scientific code for submission. Readability and reproducibility matter more than abstraction density.
-
-5. Avoid silent behavior changes.
-
-If a cleanup could alter numerical output, treat it as risky and validate it immediately.
-
-
-Repository Intent
-
-Target architecture:
-
-- reusable package under `src/emission_model/`
-- command-line runner under `scripts/`
-- analysis definitions in config
-- exploratory notebook kept separately
-
-Likely module split:
-
-- `model.py`
-- `cleaning.py`
-- `fitting.py`
-- `io.py`
-- `configs.py`
-- `pipelines.py`
-
-
-Required Validation Workflow
-
-When changing pipeline code:
-
-1. run the pipeline
-2. regenerate outputs into `Submitted_results/`
-3. run:
-
-   `python compare_results.py "Submitted_results" "Submitted_results Ref"`
-
-4. if any differences appear, stop and identify why
-
-Do not claim the refactor is complete before this comparison passes.
-
-
-Do Not Do These Things
-
-- Do not delete the notebook unless explicitly asked.
-- Do not replace exact output matching with approximate similarity.
-- Do not rename input files casually.
-- Do not rewrite scientific logic just to make it prettier.
-- Do not collapse experiment-specific behavior into generic code unless regression checks confirm equivalence.
-
-
-Preferred Conversion Order
-
-1. Freeze the notebook behavior as reference.
-2. Extract core pure functions into `src/emission_model/`.
-3. Extract parameter configs into a shared config module.
-4. Encode per-analysis settings in a config file.
-5. Implement a script-driven runner.
-6. Reproduce outputs.
-7. Validate outputs with `compare_results.py`.
-8. Rewire notebook imports after the script pipeline is stable.
-
-
-Expected Engineering Standard
-
-The final repo should allow a user to:
-
-1. install dependencies
-2. run one command to generate outputs
-3. inspect outputs in `Submitted_results/`
-4. compare outputs against `Submitted_results Ref/`
-5. use the notebook for exploration if desired
-
-
-Communication Expectations
-
-If acting as an LLM agent:
-
-- explain planned structural changes before making them
-- surface risks that could alter outputs
-- explicitly state when regression checks were run
-- report mismatches concretely
-- prefer small validated steps over broad rewrites
-
-
-Definition of Done
-
-The work is done when the repository is organized for public submission and the script-generated outputs match the reference outputs exactly.
+and prove equivalence with `tests/regression/compare_results.py` before claiming completion.

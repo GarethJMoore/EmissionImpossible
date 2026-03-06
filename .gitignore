@@ -1,11 +1,6 @@
 # Environments / IDE
 .venv/
-.idea/
 __pycache__/
-
-# Local scratch files created during analysis
-_paper_extracted.txt
-_notebook_cells_index.txt
 
 # Large paper assets
 *.pdf
@@ -23,6 +18,4 @@ _notebook_cells_index.txt
 *.pptx
 
 # Generated outputs
-Submitted_results/
-Submitted_results Ref/
-DataFolder/
+results/Submitted_results/
