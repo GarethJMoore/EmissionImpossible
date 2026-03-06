@@ -1,0 +1,27 @@
+# Environments / IDE
+.venv/
+.idea/
+__pycache__/
+
+# Local scratch files created during analysis
+_paper_extracted.txt
+_notebook_cells_index.txt
+
+# Large paper assets
+*.pdf
+
+# Data files (raw and processed)
+*.csv
+*.xlsx
+*.xls
+*.tsv
+*.rtf
+*.url
+*.png
+*.jpg
+*.jpeg
+*.pptx
+
+# Generated outputs
+Submitted_results/
+DataFolder/
