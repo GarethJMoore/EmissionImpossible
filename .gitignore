@@ -2,20 +2,6 @@
 .venv/
 __pycache__/
 
-# Large paper assets
-*.pdf
-
-# Data files (raw and processed)
-*.csv
-*.xlsx
-*.xls
-*.tsv
-*.rtf
-*.url
-*.png
-*.jpg
-*.jpeg
-*.pptx
-
 # Generated outputs
 results/Submitted_results/
+notebooks
