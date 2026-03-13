@@ -5,6 +5,15 @@ import hashlib
 from pathlib import Path
 import difflib
 
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def resolve_path(raw: str) -> Path:
+    path = Path(raw)
+    if path.is_absolute():
+        return path
+    return ROOT / path
+
 
 def sha256(path: Path) -> str:
     h = hashlib.sha256()
@@ -32,10 +41,18 @@ def first_text_diff(a: Path, b: Path) -> str:
 
     for idx, (la, lb) in enumerate(zip(a_lines, b_lines), start=1):
         if la != lb:
+            a_visible = la.rstrip("\r\n")
+            b_visible = lb.rstrip("\r\n")
+            if a_visible == b_visible:
+                return (
+                    f"line {idx} differs only by invisible characters\n"
+                    f"  A repr: {la!r}\n"
+                    f"  B repr: {lb!r}"
+                )
             return (
                 f"line {idx}\n"
-                f"  A: {la.rstrip()}\n"
-                f"  B: {lb.rstrip()}"
+                f"  A: {a_visible}\n"
+                f"  B: {b_visible}"
             )
 
     if len(a_lines) != len(b_lines):
@@ -120,8 +137,8 @@ def main() -> int:
     parser.add_argument("path_b", nargs="?", default="tests/regression/reference")
     args = parser.parse_args()
 
-    a = Path(args.path_a)
-    b = Path(args.path_b)
+    a = resolve_path(args.path_a)
+    b = resolve_path(args.path_b)
 
     if a.is_file() or b.is_file():
         return compare_files(a, b)

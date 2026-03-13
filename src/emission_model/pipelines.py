@@ -7,11 +7,20 @@ import pandas as pd
 
 from .cleaning import clean_and_reconstruct
 from .configs import (
+    param_config_CYP92C5_gene_expression,
     param_config_DMNT,
+    param_config_DMNT_single_os_adjusted,
+    param_config_DMNT_triple_damage,
+    param_config_HAC_hires,
+    param_config_hexa_hires,
+    param_config_hexo_hires,
+    param_config_IGL_gene_expression,
     param_config_indole,
     param_config_mono,
     param_config_sesq,
     param_config_TMTT,
+    param_config_TPS10_gene_expression,
+    param_config_TPS2_gene_expression,
 )
 from .fitting import process_single_group, process_single_group_three
 from .io import save_results_to_csv
@@ -171,30 +180,9 @@ def run_single_os_compounds(data_dir="data", output_dir="results/Submitted_resul
 def run_triple_damage(data_dir="data", output_dir="results/Submitted_results"):
     triple = clean_and_reconstruct(pd.read_csv(Path(data_dir) / "triple_sub.csv"), norm="Leaf3")
 
-    param_config = {
-        # Curve 1
-        "R_peak": {"min": 10, "max": 50},
-        "t_peak": {"min": 1, "max": 3},
-        "t_onset": {"min": 0, "max": 2},
-        "t_mean": {"min": 3, "max": 3.5},
-        # Curve 2
-        "R_peak2": {"min": 15, "max": 70},
-        "t_peak2": {"min": 1, "max": 3},
-        "t_onset2": {"min": 0, "max": 2},  # 3.75
-        "t_mean2": {"min": 3, "max": 3.8},
-    }
-
-    param_config3 = {
-        # Curve 3
-        "R_peak3": {"min": 20, "max": 100},
-        "t_peak3": {"min": 1, "max": 2.5},
-        "t_onset3": {"min": 0, "max": 2},
-        "t_mean3": {"min": 3, "max": 3.8},
-    }
-
+    param_config = copy.deepcopy(param_config_DMNT_triple_damage)
     comp = "DMNT"
     res = []
-    param_config = param_config | param_config3
     data = triple
     for type_ in sorted(data.Type.unique()):
         if type_ not in ["a"]:
@@ -280,12 +268,7 @@ def run_glv_hires(data_dir="data", output_dir="results/Submitted_results"):
     dirty_data.loc[dirty_data["comp"] == "hexo", "Emission"] -= 5
     data_glvkin = clean_and_reconstruct(dirty_data, background=False, norm=None)
 
-    param_config = {
-        # 'R_peak': {'min': 10, 'max':  100 },
-        # 't_peak': {'min': 4, 'max':  15 },
-        "t_onset": {"min": 0, "max": 20},
-        "t_mean": {"min": 1, "max": 40},
-    }
+    param_config = copy.deepcopy(param_config_HAC_hires)
 
     comp = "HAC"
     res = []
@@ -297,12 +280,7 @@ def run_glv_hires(data_dir="data", output_dir="results/Submitted_results"):
             res.append(individual_results)
     save_results_to_csv(res, "Results_HAC_HiRes", output_dir=output_dir)
 
-    param_config = {
-        # 'R_peak': {'min': 60, 'max':  110 },
-        # 't_peak': {'min': 4, 'max':  8 },
-        "t_onset": {"min": 0.0, "max": 20},
-        "t_mean": {"min": 1, "max": 40},
-    }
+    param_config = copy.deepcopy(param_config_hexo_hires)
 
     comp = "hexo"
     res = []
@@ -314,12 +292,7 @@ def run_glv_hires(data_dir="data", output_dir="results/Submitted_results"):
             res.append(individual_results)
     save_results_to_csv(res, "Results_hexo_HiRes", output_dir=output_dir)
 
-    param_config = {
-        # 'R_peak': {'min': 5000, 'max':  8000 },
-        # 't_peak': {'min': 2, 'max':  6 },
-        "t_onset": {"min": 0.0, "max": 1},
-        "t_mean": {"min": 4, "max": 15},
-    }
+    param_config = copy.deepcopy(param_config_hexa_hires)
 
     comp = "hexa"
     res = []
@@ -335,12 +308,7 @@ def run_glv_hires(data_dir="data", output_dir="results/Submitted_results"):
 def run_gene_expression(data_dir="data", output_dir="results/Submitted_results"):
     gene = clean_and_reconstruct(pd.read_csv(Path(data_dir) / "genexpression_real_sub.csv"), norm=None)
 
-    param_config = {
-        # 'R_peak': {'min': 0.02, 'max':  0.06 },
-        # 't_peak': {'min': 0.21, 'max':  0.6 },
-        "t_onset": {"min": 0, "max": 2},
-        "t_mean": {"min": 0.1, "max": 5},
-    }
+    param_config = copy.deepcopy(param_config_CYP92C5_gene_expression)
 
     comp = "CYP92C5"
     res = []
@@ -352,12 +320,7 @@ def run_gene_expression(data_dir="data", output_dir="results/Submitted_results")
             res.append(individual_results)
     save_results_to_csv(res, "Results_CYP92C5_GeneExpression", output_dir=output_dir)
 
-    param_config = {
-        # 'R_peak': {'min': 0.02, 'max':  0.06 },
-        # 't_peak': {'min': 0.21, 'max':  0.6 },
-        "t_onset": {"min": 0, "max": 2},
-        "t_mean": {"min": 0.1, "max": 5},
-    }
+    param_config = copy.deepcopy(param_config_IGL_gene_expression)
 
     comp = "IGL"
     res = []
@@ -369,12 +332,7 @@ def run_gene_expression(data_dir="data", output_dir="results/Submitted_results")
             res.append(individual_results)
     save_results_to_csv(res, "Results_IGL_GeneExpression", output_dir=output_dir)
 
-    param_config = {
-        # 'R_peak': {'min': 3, 'max':  6 },
-        # 't_peak': {'min': 2, 'max':  5 },
-        "t_onset": {"min": 0, "max": 2},
-        "t_mean": {"min": 0.1, "max": 5},
-    }
+    param_config = copy.deepcopy(param_config_TPS10_gene_expression)
 
     comp = "TPS10"
     res = []
@@ -386,12 +344,7 @@ def run_gene_expression(data_dir="data", output_dir="results/Submitted_results")
             res.append(individual_results)
     save_results_to_csv(res, "Results_TPS10_GeneExpression", output_dir=output_dir)
 
-    param_config = {
-        # 'R_peak': {'min': 0.4, 'max':  1.8 },
-        # 't_peak': {'min': 0.8, 'max':  2 },
-        "t_onset": {"min": 0, "max": 2},
-        "t_mean": {"min": 0.1, "max": 5},
-    }
+    param_config = copy.deepcopy(param_config_TPS2_gene_expression)
 
     comp = "TPS2"
     res = []
@@ -447,12 +400,7 @@ def run_os_time_cut(data_dir="data", output_dir="results/Submitted_results"):
                 continue
     save_results_to_csv(res, "Results_indole_Single_OS_time_cut_1percent", output_dir=output_dir)
 
-    param_config = {
-        # 'R_peak': {'min': 1, 'max':  600 },
-        # 't_peak': {'min': 1, 'max':  15 },
-        "t_onset": {"min": 0, "max": 10},
-        "t_mean": {"min": 1, "max": 20},
-    }
+    param_config = copy.deepcopy(param_config_DMNT_single_os_adjusted)
 
     comp = "DMNT"
     res = []
@@ -528,13 +476,7 @@ def run_os_resolution_adjusted(data_dir="data", output_dir="results/Submitted_re
                 continue
     save_results_to_csv(res, "Results_indole_Single_OS_resolution_adjusted", output_dir=output_dir)
 
-    param_config = {
-        # 'R_peak': {'min': 1, 'max':  600 },
-        # 't_peak': {'min': 1, 'max':  15 },
-        "t_onset": {"min": 0, "max": 10},
-        "t_mean": {"min": 1, "max": 20}
-        # 't_mean': {'min': 1, 'max': 18 }
-    }
+    param_config = copy.deepcopy(param_config_DMNT_single_os_adjusted)
 
     comp = "DMNT"
     res = []
