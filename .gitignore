@@ -1,6 +1,7 @@
 # Environments / IDE
 .venv/
 __pycache__/
+.idea/
 
 # Generated outputs
 notebooks/
