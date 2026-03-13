@@ -4,6 +4,16 @@ This repository contains the data, analysis code, and reference outputs for the 
 
 **"Quantitative modelling of biological response dynamics reveals novel patterns in plant volatile signalling"**
 
+Authors: Jamie M. Waterman*†1,2, Gareth J. Moore†3, Loren K. Amdahl-Culleton3, Sara Hoefer2, Matthias Erb2
+
+Affiliations:
+1Discipline of Botany, School of Natural Sciences, Trinity College Dublin, Dublin, Ireland
+2Institute of Plant Sciences, University of Bern, Bern, Switzerland
+3Independent
+
+*Corresponding author. Email: watermaj@tcd.ie
+†Authors contributed equally to this work
+
 The paper itself is included in this repository as:
 
 - [Quantitative modelling of biological response dynamics reveals novel patterns in plant volatile signalling.pdf](./Quantitative%20modelling%20of%20biological%20response%20dynamics%20reveals%20novel%20patterns%20in%20plant%20volatile%20signalling.pdf)
