@@ -7,9 +7,9 @@ This repository contains the data, analysis code, and reference outputs for the 
 Authors: Jamie M. Waterman*†1,2, Gareth J. Moore†3, Loren K. Amdahl-Culleton3, Sara Hoefer2, Matthias Erb2
 
 Affiliations:
-1Discipline of Botany, School of Natural Sciences, Trinity College Dublin, Dublin, Ireland
-2Institute of Plant Sciences, University of Bern, Bern, Switzerland
-3Independent
+$^1$ Discipline of Botany, School of Natural Sciences, Trinity College Dublin, Dublin, Ireland<br> 
+$^2$Institute of Plant Sciences, University of Bern, Bern, Switzerland <br>
+$^3$Independent
 
 *Corresponding author. Email: watermaj@tcd.ie
 †Authors contributed equally to this work
