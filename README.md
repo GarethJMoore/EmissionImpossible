@@ -45,6 +45,8 @@ You do not need to use the notebook to reproduce the submitted results.
   Submission input datasets (`*_sub.csv`)
 - `results/Submitted_results/`
   Generated output CSV files
+- `notebooks/Goodness of fit analysis.ipynb`
+  Executed notebook summarising goodness-of-fit metrics from the submitted result CSVs
 - `tests/regression/reference/`
   Reference output CSV files used for exact comparison
 - `scripts/run_analysis.py`
@@ -94,6 +96,27 @@ If you only want to run one analysis block, you can do that too. For example:
 
 ```bash
 python scripts/run_analysis.py --analysis dmnt_dose
+```
+
+## Goodness-Of-Fit Report
+
+The repository includes an executed goodness-of-fit notebook:
+
+`notebooks/Goodness of fit analysis.ipynb`
+
+This notebook reads the generated CSV files in `results/Submitted_results/`, excluding the resolution-adjusted and time-cut sensitivity analyses, then reconstructs fitted curves by `Type`, `comp`, and `Channel_number`.
+
+It reports:
+
+- mean peak-normalised R-squared across individual fitted curves
+- mean peak-normalised RMSE across individual fitted curves
+- R-squared comparing the mean fitted curve with the mean observed emission curve
+- peak-normalised RMSE comparing the mean fitted curve with the mean observed emission curve
+
+To re-run the report after regenerating results:
+
+```bash
+jupyter notebook "notebooks/Goodness of fit analysis.ipynb"
 ```
 
 ## For Readers Of The Paper

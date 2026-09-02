@@ -4,4 +4,5 @@ __pycache__/
 .idea/
 
 # Generated outputs
-notebooks/
+notebooks/*
+!notebooks/Goodness of fit analysis.ipynb
